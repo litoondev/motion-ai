@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE / editor
+.cursor/
+.devin/
+.claude/
+
+# SQLite database (dev only — never commit real data)
+prisma/prisma/dev.db
+prisma/dev.db
+*.db-journal
+*.db-wal
+*.db-shm
