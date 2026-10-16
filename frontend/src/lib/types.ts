@@ -1,0 +1,79 @@
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  avatar: string | null;
+  role: 'user' | 'admin';
+  status: 'active' | 'blocked';
+  email_verified_at: string | null;
+  trial_used: boolean;
+  trial_started_at: string | null;
+  trial_ends_at: string | null;
+  created_at: string;
+}
+
+export interface License {
+  id: number;
+  license_key: string;
+  type: 'trial' | 'paid';
+  status: 'active' | 'expired' | 'suspended' | 'revoked';
+  purchased_at: string | null;
+  expires_at: string | null;
+  updated_until: string | null;
+  seat_count: number;
+  active_devices: number;
+  max_devices: number;
+  created_at: string;
+  devices?: Device[];
+}
+
+export interface Device {
+  id: number;
+  device_id: string;
+  device_name: string | null;
+  platform: string | null;
+  ae_version: string | null;
+  linked_at: string;
+  last_seen_at: string;
+  is_active: boolean;
+}
+
+export interface Payment {
+  id: number;
+  method: 'card' | 'bank_transfer';
+  status: 'pending' | 'approved' | 'rejected' | 'refunded';
+  amount: number;
+  currency: string;
+  bank_tx_ref: string | null;
+  seat_count: number;
+  year_count: number;
+  created_at: string;
+}
+
+export interface Pricing {
+  price_per_seat_year: number;
+  team_price_per_seat_year: number;
+  team_threshold: number;
+  trial_days: number;
+}
+
+export interface DashboardData {
+  user: User;
+  licenses: License[];
+  recent_payments: Payment[];
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}

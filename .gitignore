@@ -1,0 +1,31 @@
+node_modules
+.next
+.env
+.env.local
+.env.production
+.env.*.local
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.cursor/
+.devin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Laravel
+/backend/vendor/
+/backend/storage/framework/cache/data/*
+/backend/storage/framework/sessions/*
+/backend/storage/framework/views/*
+/backend/storage/logs/*
+/backend/storage/app/private/plugin/*.zip
+/backend/storage/app/private/slips/*
+/backend/bootstrap/cache/*.php
+!/backend/storage/framework/cache/.gitkeep
+!/backend/storage/framework/sessions/.gitkeep
+!/backend/storage/framework/views/.gitkeep
+!/backend/storage/logs/.gitkeep
+!/backend/bootstrap/cache/.gitkeep
