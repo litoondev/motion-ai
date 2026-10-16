@@ -60,6 +60,11 @@ function LoginForm() {
   }
 
   async function handleGoogleSignIn() {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId || clientId === "your-google-client-id") {
+      toast.error("Google sign-in is not configured yet.");
+      return;
+    }
     setLoading(true);
     try {
       const script = document.createElement("script");
@@ -67,7 +72,7 @@ function LoginForm() {
       script.async = true;
       script.onload = () => {
         window.google?.accounts.id.initialize({
-          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "",
+          client_id: clientId,
           callback: async (response: { credential: string }) => {
             const result = await googleAuthAction({ id_token: response.credential });
             if (result.success) {
