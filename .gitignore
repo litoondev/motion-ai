@@ -16,16 +16,16 @@ next-env.d.ts
 Thumbs.db
 
 # Laravel
-/backend/vendor/
-/backend/storage/framework/cache/data/*
-/backend/storage/framework/sessions/*
-/backend/storage/framework/views/*
-/backend/storage/logs/*
-/backend/storage/app/private/plugin/*.zip
-/backend/storage/app/private/slips/*
-/backend/bootstrap/cache/*.php
-!/backend/storage/framework/cache/.gitkeep
-!/backend/storage/framework/sessions/.gitkeep
-!/backend/storage/framework/views/.gitkeep
-!/backend/storage/logs/.gitkeep
-!/backend/bootstrap/cache/.gitkeep
+/website/backend/vendor/
+/website/backend/storage/framework/cache/data/*
+/website/backend/storage/framework/sessions/*
+/website/backend/storage/framework/views/*
+/website/backend/storage/logs/*
+/website/backend/storage/app/private/plugin/*.zip
+/website/backend/storage/app/private/slips/*
+/website/backend/bootstrap/cache/*.php
+!/website/backend/storage/framework/cache/.gitkeep
+!/website/backend/storage/framework/sessions/.gitkeep
+!/website/backend/storage/framework/views/.gitkeep
+!/website/backend/storage/logs/.gitkeep
+!/website/backend/bootstrap/cache/.gitkeep
