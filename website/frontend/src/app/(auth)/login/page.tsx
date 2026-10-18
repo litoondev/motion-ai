@@ -42,6 +42,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const callbackUrl = params.get("callbackUrl") ?? "/dashboard";
 
@@ -65,7 +66,7 @@ function LoginForm() {
       toast.error("Google sign-in is not configured yet.");
       return;
     }
-    setLoading(true);
+    setGoogleLoading(true);
     try {
       const script = document.createElement("script");
       script.src = "https://accounts.google.com/gsi/client";
@@ -81,7 +82,7 @@ function LoginForm() {
             } else {
               toast.error(result.error ?? "Google sign-in failed.");
             }
-            setLoading(false);
+            setGoogleLoading(false);
           },
         });
         window.google?.accounts.id.prompt();
@@ -89,7 +90,7 @@ function LoginForm() {
       document.body.appendChild(script);
     } catch {
       toast.error("Google sign-in failed.");
-      setLoading(false);
+      setGoogleLoading(false);
     }
   }
 
@@ -104,8 +105,8 @@ function LoginForm() {
           </p>
         </div>
 
-        <Button variant="secondary" size="lg" className="w-full mb-4" leftIcon={<GoogleIcon />}
-          loading={loading} onClick={handleGoogleSignIn}>
+        <Button type="button" variant="secondary" size="lg" className="w-full mb-4" leftIcon={<GoogleIcon />}
+          loading={googleLoading} onClick={handleGoogleSignIn}>
           Continue with Google
         </Button>
 

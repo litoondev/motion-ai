@@ -44,6 +44,7 @@ export default function RegisterPage() {
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
@@ -88,7 +89,7 @@ export default function RegisterPage() {
       toast.error("Google sign-in is not configured yet.");
       return;
     }
-    setLoading(true);
+    setGoogleLoading(true);
     try {
       const script = document.createElement("script");
       script.src = "https://accounts.google.com/gsi/client";
@@ -104,7 +105,7 @@ export default function RegisterPage() {
             } else {
               toast.error(result.error ?? "Google sign-in failed.");
             }
-            setLoading(false);
+            setGoogleLoading(false);
           },
         });
         window.google?.accounts.id.prompt();
@@ -112,7 +113,7 @@ export default function RegisterPage() {
       document.body.appendChild(script);
     } catch {
       toast.error("Google sign-in failed.");
-      setLoading(false);
+      setGoogleLoading(false);
     }
   }
 
@@ -128,11 +129,12 @@ export default function RegisterPage() {
         </div>
 
         <Button
+          type="button"
           variant="secondary"
           size="lg"
           className="w-full mb-4"
           leftIcon={<GoogleIcon />}
-          loading={loading}
+          loading={googleLoading}
           onClick={handleGoogleSignIn}
         >
           Sign up with Google
