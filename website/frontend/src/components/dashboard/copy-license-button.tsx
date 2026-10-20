@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 
 /** navigator.clipboard only exists on https / localhost; fall back for plain-http share servers. */
-async function copyText(text: string): Promise<boolean> {
+export async function copyText(text: string): Promise<boolean> {
   try {
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(text);

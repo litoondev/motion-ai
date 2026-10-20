@@ -53,7 +53,7 @@ function sortLicenses(licenses: License[]): License[] {
 }
 
 export default function DashboardPage() {
-  const { data, loading, error, reload } = useFetch(() => userService.dashboard());
+  const { data, loading, error, reload } = useFetch(() => userService.dashboard(), [], { cacheKey: "dashboard" });
   const { pricing } = usePricing();
 
   if (loading) return <PageSpinner label="Loading your dashboard…" />;
@@ -82,7 +82,7 @@ export default function DashboardPage() {
         <QueryToasts />
       </Suspense>
 
-      <div className="pb-6 border-b border-[var(--color-border-soft)] mb-6">
+      <div className="pb-6 border-b border-[var(--color-border-soft)]">
         <h1 className="text-xl font-bold font-heading text-[var(--color-text-primary)] leading-tight">Dashboard</h1>
         <p className="text-sm text-[var(--color-text-muted)] font-body mt-1">
           Welcome back, {user.name || user.email}
