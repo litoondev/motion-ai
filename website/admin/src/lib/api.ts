@@ -39,12 +39,9 @@ export async function apiFetch<T>(path: string, options: ApiOptions = {}): Promi
       // ignore parse error
     }
 
-    if (res.status === 401) {
-      // Clear cookie on 401 — handled by middleware redirect
-      if (typeof window !== "undefined") {
-        document.cookie = "admin_auth_token=; path=/; max-age=0";
-        window.location.href = "/login";
-      }
+    if (res.status === 401 && typeof window !== "undefined") {
+      document.cookie = "admin_auth_token=; path=/; max-age=0";
+      window.location.href = "/login";
     }
 
     throw new ApiError(

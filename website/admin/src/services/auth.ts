@@ -19,10 +19,10 @@ export async function login(payload: LoginPayload): Promise<AuthResponse> {
   });
 }
 
-export async function googleLogin(credential: string): Promise<AuthResponse> {
+export async function googleLogin(idToken: string): Promise<AuthResponse> {
   return apiFetch<AuthResponse>(endpoints.auth.google, {
     method: "POST",
-    body: JSON.stringify({ credential }),
+    body: JSON.stringify({ id_token: idToken }),
   });
 }
 

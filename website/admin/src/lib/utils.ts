@@ -34,6 +34,11 @@ export function maskLicenseKey(key: string): string {
   return [parts[0], "•••••", "•••••", "•••••", "•••••", "•••••", "•••••", parts[parts.length - 1]].join("-");
 }
 
+/** Format a number as currency */
+export function formatCurrency(amount: number, currency = "USD"): string {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
+}
+
 /** Calculate renewal price in USD */
 export function calcPrice(seats: number, years: number): number {
   const basePerSeatYear = Number(process.env.NEXT_PUBLIC_PRICE_PER_SEAT_YEAR ?? 49);

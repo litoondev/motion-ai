@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { SearchFilter } from "@/components/admin/search-filter";
 import { getAuditLogs } from "@/services/admin";
-import { getAuthToken } from "@/app/actions/auth";
+import { getAuthToken } from "@/lib/auth-cookie";
 import { formatDate } from "@/lib/utils";
 import type { AuditLog, PaginatedResponse } from "@/lib/types";
 import toast from "react-hot-toast";

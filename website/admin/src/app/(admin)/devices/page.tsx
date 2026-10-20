@@ -8,7 +8,7 @@ import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getDevices, forceUnlinkDevice } from "@/services/admin";
-import { getAuthToken } from "@/app/actions/auth";
+import { getAuthToken } from "@/lib/auth-cookie";
 import { formatDate, maskLicenseKey } from "@/lib/utils";
 import type { Device, PaginatedResponse } from "@/lib/types";
 import toast from "react-hot-toast";

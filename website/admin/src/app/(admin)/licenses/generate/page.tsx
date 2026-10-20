@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { generateLicense } from "@/services/admin";
-import { getAuthToken } from "@/app/actions/auth";
+import { getAuthToken } from "@/lib/auth-cookie";
 import toast from "react-hot-toast";
 
 type LicenseType = "paid" | "trial";

@@ -1,21 +1,18 @@
-import type { Metadata } from "next";
+"use client";
+
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/lib/auth-context";
-import { getAuthToken } from "@/app/actions/auth";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Motion AI Admin",
-  description: "Admin panel for Motion AI plugin system",
-};
-
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const token = await getAuthToken();
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <title>Motion AI Admin</title>
+        <meta name="description" content="Admin panel for Motion AI plugin system" />
+      </head>
       <body>
-        <AuthProvider token={token}>
+        <AuthProvider>
           {children}
           <Toaster
             position="top-right"

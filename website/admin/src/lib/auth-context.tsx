@@ -1,58 +1,75 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import type { User } from "@/lib/types";
 import { getMe } from "@/services/auth";
-import { clearAuthCookie } from "@/app/actions/auth";
+import { getAuthToken, clearAuthCookie } from "@/lib/auth-cookie";
 
 interface AuthContextType {
   user: User | null;
+  token: string | undefined;
   loading: boolean;
-  logout: () => Promise<void>;
+  logout: () => void;
   refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
+  token: undefined,
   loading: true,
-  logout: async () => {},
+  logout: () => {},
   refreshUser: async () => {},
 });
 
-export function AuthProvider({ children, token }: { children: React.ReactNode; token?: string }) {
+const PUBLIC_PATHS = ["/login"];
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
   const fetchUser = useCallback(async () => {
-    if (!token) {
+    const stored = getAuthToken();
+    if (!stored) {
       setLoading(false);
+      if (!PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
+        router.push("/login");
+      }
       return;
     }
+    setToken(stored);
     try {
-      const me = await getMe(token);
+      const me = await getMe(stored);
       if (me.role !== "admin") {
-        await clearAuthCookie();
+        clearAuthCookie();
+        setToken(undefined);
         router.push("/login");
         return;
       }
       setUser(me);
+      if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
+        router.push("/");
+      }
     } catch {
-      await clearAuthCookie();
+      clearAuthCookie();
+      setToken(undefined);
       router.push("/login");
     } finally {
       setLoading(false);
     }
-  }, [token, router]);
+  }, [pathname, router]);
 
   useEffect(() => {
     fetchUser();
   }, [fetchUser]);
 
-  const logout = useCallback(async () => {
-    await clearAuthCookie();
+  const logout = useCallback(() => {
+    clearAuthCookie();
     setUser(null);
+    setToken(undefined);
     router.push("/login");
   }, [router]);
 
@@ -61,7 +78,7 @@ export function AuthProvider({ children, token }: { children: React.ReactNode; t
   }, [fetchUser]);
 
   return (
-    <AuthContext.Provider value={{ user, loading, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, token, loading, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

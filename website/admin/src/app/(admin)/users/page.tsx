@@ -7,7 +7,7 @@ import { ConfirmDialog } from "@/components/admin/confirm-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getUsers, blockUser, unblockUser, changeUserRole } from "@/services/admin";
-import { getAuthToken } from "@/app/actions/auth";
+import { getAuthToken } from "@/lib/auth-cookie";
 import { formatDate } from "@/lib/utils";
 import type { User, PaginatedResponse } from "@/lib/types";
 import { ShieldCheck, Ban, ShieldOff } from "lucide-react";

@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, Loader2 } from "lucide-react";
+import { Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { login, getMe } from "@/services/auth";
-import { setAuthCookie } from "@/app/actions/auth";
+import { setAuthCookie } from "@/lib/auth-cookie";
 import toast from "react-hot-toast";
 
 export default function LoginPage() {
@@ -20,19 +20,15 @@ export default function LoginPage() {
     e.preventDefault();
     if (!email || !password) return;
     setLoading(true);
-
     try {
       const { token } = await login({ email, password });
-
-      // Verify admin role
       const user = await getMe(token);
       if (user.role !== "admin") {
         toast.error("Access denied. Admin role required.");
         setLoading(false);
         return;
       }
-
-      await setAuthCookie(token);
+      setAuthCookie(token);
       toast.success("Welcome back!");
       router.push("/");
     } catch (err) {
@@ -40,11 +36,6 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-  }
-
-  async function handleGoogleLogin() {
-    // Google OAuth would be implemented here
-    toast.error("Google login is not configured yet");
   }
 
   return (
@@ -91,26 +82,6 @@ export default function LoginPage() {
               Sign in
             </Button>
           </form>
-
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full h-px bg-[var(--color-border)]" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="px-3 bg-[var(--color-bg-surface)] text-xs text-[var(--color-text-muted)] font-body">
-                or
-              </span>
-            </div>
-          </div>
-
-          <Button
-            variant="secondary"
-            size="lg"
-            className="w-full"
-            onClick={handleGoogleLogin}
-          >
-            Continue with Google
-          </Button>
         </CardContent>
       </Card>
     </div>

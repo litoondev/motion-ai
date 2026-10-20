@@ -1,12 +1,7 @@
-const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
-const API_URL = process.env.API_URL || NEXT_PUBLIC_API_URL;
+import { API_BASE_URL } from "@/lib/config";
 
-if (!NEXT_PUBLIC_API_URL) {
-  throw new Error('NEXT_PUBLIC_API_URL environment variable is required');
-}
-
-export const API_BASE_URL = API_URL!;
-export const PUBLIC_API_BASE_URL = NEXT_PUBLIC_API_URL;
+export { API_BASE_URL };
+export const PUBLIC_API_BASE_URL = API_BASE_URL;
 
 export function getApiUrl(path: string): string {
   return `${API_BASE_URL}${path.startsWith('/') ? path : '/' + path}`;

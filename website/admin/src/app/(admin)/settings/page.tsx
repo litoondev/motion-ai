@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { getSettings, updateSettings, uploadPlugin } from "@/services/admin";
-import { getAuthToken } from "@/app/actions/auth";
+import { getAuthToken } from "@/lib/auth-cookie";
 import type { Setting } from "@/lib/types";
 import toast from "react-hot-toast";
 

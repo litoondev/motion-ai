@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Users, Key, CreditCard, MonitorSmartphone, UserPlus, DollarSign } from "lucide-react";
 import { StatCard } from "@/components/admin/stat-card";
 import { getStats } from "@/services/admin";
-import { getAuthToken } from "@/app/actions/auth";
+import { getAuthToken } from "@/lib/auth-cookie";
 import type { Stats } from "@/lib/types";
 import toast from "react-hot-toast";
 
