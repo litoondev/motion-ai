@@ -42,11 +42,12 @@ class LicenseController extends Controller
             $query->where('status', $status);
         }
 
-        $sortBy = $request->input('sort_by', 'created_at');
-        $sortDir = $request->input('sort_dir', 'desc');
+        $sortBy = in_array($request->input('sort_by'), ['created_at', 'expires_at', 'status', 'type', 'seat_count'], true)
+            ? $request->input('sort_by') : 'created_at';
+        $sortDir = $request->input('sort_dir') === 'asc' ? 'asc' : 'desc';
         $query->orderBy($sortBy, $sortDir);
 
-        $licenses = $query->paginate($request->input('per_page', 15));
+        $licenses = $query->paginate(min((int) $request->input('per_page', 15), 100));
 
         return $this->success(LicenseResource::collection($licenses)->response()->getData(true));
     }
@@ -69,7 +70,7 @@ class LicenseController extends Controller
                 'name' => explode('@', $validated['email'])[0],
                 'email' => $validated['email'],
                 'password' => Hash::make(Str::random(32)),
-                'role' => $validated['email'] === env('ADMIN_EMAIL') ? Role::Admin : Role::User,
+                'role' => strcasecmp($validated['email'], (string) config('app.admin_email')) === 0 ? Role::Admin : Role::User,
                 'status' => \App\Enums\UserStatus::Active,
             ]);
         }

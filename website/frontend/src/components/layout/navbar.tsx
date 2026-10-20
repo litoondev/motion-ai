@@ -2,21 +2,27 @@
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Menu, X, ChevronDown, User, LayoutDashboard, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { label: "Features",  href: "/#features"  },
-  { label: "Pricing",   href: "/#pricing"   },
-  { label: "Changelog", href: "/changelog"  },
-  { label: "Docs",      href: "/docs"       },
+  { label: "Features", href: "/#features" },
+  { label: "Pricing",  href: "/#pricing"  },
+  { label: "Docs",     href: "/docs/"     },
 ];
 
 export function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, loading, signOut } = useAuth();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  async function logout() {
+    await signOut();
+    router.replace("/login/");
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[var(--color-border)] bg-[var(--color-bg-base)]/90 backdrop-blur-md">
@@ -46,7 +52,9 @@ export function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {user ? (
+          {loading ? (
+            <div className="hidden md:block h-8 w-40" aria-hidden />
+          ) : user ? (
             <div className="relative hidden md:block">
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
@@ -72,7 +80,7 @@ export function Navbar() {
                   onMouseLeave={() => setUserMenuOpen(false)}
                 >
                   <Link
-                    href="/dashboard"
+                    href="/dashboard/"
                     className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] transition-colors"
                     onClick={() => setUserMenuOpen(false)}
                   >
@@ -80,7 +88,7 @@ export function Navbar() {
                   </Link>
                   <div className="my-1 border-t border-[var(--color-border)]" />
                   <button
-                    onClick={() => { logout(); setUserMenuOpen(false); }}
+                    onClick={() => { setUserMenuOpen(false); void logout(); }}
                     className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[var(--color-error)] hover:bg-[var(--color-bg-elevated)] transition-colors"
                   >
                     <LogOut className="h-4 w-4" /> Sign out
@@ -91,16 +99,18 @@ export function Navbar() {
           ) : (
             <div className="hidden md:flex items-center gap-2">
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/login">Sign in</Link>
+                <Link href="/login/">Sign in</Link>
               </Button>
               <Button variant="cta" size="sm" asChild>
-                <Link href="/register">Get started</Link>
+                <Link href="/register/">Get started</Link>
               </Button>
             </div>
           )}
 
           {/* Mobile menu toggle */}
           <button
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
             className="md:hidden p-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
             onClick={() => setMenuOpen(!menuOpen)}
           >
@@ -125,18 +135,18 @@ export function Navbar() {
               </li>
             ))}
           </ul>
-          {user ? (
+          {loading ? null : user ? (
             <div className="mt-3 flex flex-col gap-1 border-t border-[var(--color-border)] pt-3">
-              <Link href="/dashboard" className="block py-2 px-2 text-sm text-[var(--color-text-secondary)]" onClick={() => setMenuOpen(false)}>Dashboard</Link>
-              <button onClick={() => logout()} className="text-left py-2 px-2 text-sm text-[var(--color-error)]">Sign out</button>
+              <Link href="/dashboard/" className="block py-2 px-2 text-sm text-[var(--color-text-secondary)]" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+              <button onClick={() => { setMenuOpen(false); void logout(); }} className="text-left py-2 px-2 text-sm text-[var(--color-error)]">Sign out</button>
             </div>
           ) : (
             <div className="mt-3 flex gap-2 border-t border-[var(--color-border)] pt-3">
               <Button variant="secondary" size="sm" className="flex-1" asChild>
-                <Link href="/login">Sign in</Link>
+                <Link href="/login/">Sign in</Link>
               </Button>
               <Button variant="cta" size="sm" className="flex-1" asChild>
-                <Link href="/register">Get started</Link>
+                <Link href="/register/">Get started</Link>
               </Button>
             </div>
           )}

@@ -1,14 +1,15 @@
 "use client";
-import { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ArrowRight, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import toast from "react-hot-toast";
-import { resetPasswordAction } from "@/app/actions/auth";
+import { authService } from "@/services/auth";
+import { errorMessage, fieldErrors } from "@/lib/api";
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -23,34 +24,26 @@ function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email || !password || !passwordConfirm || !token) return;
-
-    if (password !== passwordConfirm) {
-      toast.error("Passwords do not match.");
-      return;
-    }
-
-    if (password.length < 8) {
-      toast.error("Password must be at least 8 characters.");
-      return;
-    }
+    const next: Record<string, string> = {};
+    if (password.length < 8) next.password = "Password must be at least 8 characters.";
+    if (password !== passwordConfirm) next.password_confirmation = "Passwords do not match.";
+    setErrors(next);
+    if (Object.keys(next).length > 0) return;
 
     setLoading(true);
-    const result = await resetPasswordAction({
-      email,
-      password,
-      password_confirmation: passwordConfirm,
-      token,
-    });
-    setLoading(false);
-
-    if (result.success) {
+    try {
+      await authService.resetPassword({ email: email.trim(), password, password_confirmation: passwordConfirm, token });
       setSuccess(true);
-    } else {
-      toast.error(result.error ?? "Failed to reset password.");
+    } catch (err) {
+      const fields = fieldErrors(err);
+      setErrors(fields);
+      toast.error(errorMessage(err, "Failed to reset password."));
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -62,9 +55,7 @@ function ResetPasswordForm() {
         <p className="text-sm text-[var(--color-text-secondary)] font-body mb-6">
           Your password has been reset successfully. You can now sign in with your new password.
         </p>
-        <Button variant="primary" size="lg" onClick={() => router.push("/login")}>
-          Sign in
-        </Button>
+        <Button variant="primary" size="lg" onClick={() => router.push("/login/")}>Sign in</Button>
       </Card>
     );
   }
@@ -76,7 +67,7 @@ function ResetPasswordForm() {
         <p className="text-sm text-[var(--color-text-secondary)] font-body mb-6">
           This password reset link is invalid or has expired.
         </p>
-        <Link href="/forgot-password" className="text-sm text-[var(--color-primary-600)] hover:underline font-body">
+        <Link href="/forgot-password/" className="text-sm text-[var(--color-primary-600)] hover:underline font-body">
           Request a new reset link
         </Link>
       </Card>
@@ -95,8 +86,8 @@ function ResetPasswordForm() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <Input label="Email address" type="email" placeholder="you@example.com"
-            value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
+          <Input label="Email address" type="email" placeholder="you@example.com" value={email}
+            onChange={(e) => setEmail(e.target.value)} autoComplete="email" error={errors.email} required />
           <Input
             label="New password"
             type={showPassword ? "text" : "password"}
@@ -104,9 +95,11 @@ function ResetPasswordForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
+            error={errors.password}
             required
             rightIcon={
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="cursor-pointer">
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="cursor-pointer"
+                aria-label={showPassword ? "Hide password" : "Show password"}>
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             }
@@ -118,10 +111,11 @@ function ResetPasswordForm() {
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
             autoComplete="new-password"
+            error={errors.password_confirmation}
             required
           />
-          <Button type="submit" variant="primary" size="lg" className="w-full"
-            loading={loading} rightIcon={<ArrowRight className="h-4 w-4" />}>
+          <Button type="submit" variant="primary" size="lg" className="w-full" loading={loading}
+            rightIcon={<ArrowRight className="h-4 w-4" />}>
             Reset password
           </Button>
         </form>
@@ -132,9 +126,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={
-      <div className="w-full max-w-md h-96 card animate-shimmer rounded-[var(--radius-lg)]" />
-    }>
+    <Suspense fallback={<div className="w-full max-w-md h-96 card animate-shimmer rounded-[var(--radius-lg)]" />}>
       <ResetPasswordForm />
     </Suspense>
   );

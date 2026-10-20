@@ -22,7 +22,7 @@ class DeviceController extends Controller
     public function unlink(Request $request, Device $device): JsonResponse
     {
         // Verify ownership
-        if ($device->license->user_id !== $request->user()->id) {
+        if ($device->user_id !== $request->user()->id) {
             return $this->error('Device not found.', 404);
         }
 

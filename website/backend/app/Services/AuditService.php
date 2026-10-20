@@ -3,23 +3,25 @@
 namespace App\Services;
 
 use App\Models\AdminAuditLog;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
 class AuditService
 {
     public static function log(
-        int $adminId,
+        User $admin,
         string $action,
-        ?string $targetType = null,
-        ?int $targetId = null,
+        ?Model $target = null,
         ?array $meta = null,
+        ?string $ip = null,
     ): AdminAuditLog {
         return AdminAuditLog::create([
-            'admin_id' => $adminId,
+            'admin_id' => $admin->id,
             'action' => $action,
-            'target_type' => $targetType,
-            'target_id' => $targetId,
+            'target_type' => $target ? class_basename($target) : null,
+            'target_id' => $target?->getKey(),
             'meta' => $meta,
-            'ip' => request()->ip(),
+            'ip' => $ip ?? request()->ip(),
         ]);
     }
 }

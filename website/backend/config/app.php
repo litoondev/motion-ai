@@ -7,6 +7,8 @@ return [
     'debug' => (bool) env('APP_DEBUG', false),
     'url' => env('APP_URL', 'http://localhost'),
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
+    'admin_email' => env('ADMIN_EMAIL'),
+    'plugin_file_path' => env('PLUGIN_FILE_PATH', 'plugin/motion-ai-plugin.zip'),
     'timezone' => 'UTC',
     'locale' => 'en',
     'fallback_locale' => 'en',

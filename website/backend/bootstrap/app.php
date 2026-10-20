@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\LicenseVerifyController;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\ForceJsonResponse;
 use App\Traits\ApiResponses;
@@ -9,14 +10,20 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         api: __DIR__.'/../routes/api.php',
-        apiPrefix: 'api/v1',
         health: '/up',
+        apiPrefix: 'api/v1',
+        then: function () {
+            // Legacy path used by already-shipped plugins: POST /api/license/verify
+            Route::middleware(['api', 'throttle:30,1'])
+                ->post('/api/license/verify', [LicenseVerifyController::class, 'verify']);
+        },
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
@@ -27,7 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ForceJsonResponse::class,
         ]);
 
-        $middleware->statefulApi();
+//        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (ValidationException $e, Request $request) {
@@ -63,10 +70,17 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*') || $request->wantsJson()) {
                 $status = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500;
 
-                return response()->json([
+                $body = [
                     'success' => false,
                     'message' => config('app.debug') ? $e->getMessage() : 'Internal server error.',
-                ], $status);
+                ];
+
+                if (config('app.debug')) {
+                    $body['exception'] = get_class($e);
+                    $body['file'] = $e->getFile() . ':' . $e->getLine();
+                }
+
+                return response()->json($body, $status);
             }
         });
     })

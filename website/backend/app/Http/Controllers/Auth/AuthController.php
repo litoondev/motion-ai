@@ -12,10 +12,12 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Google\Client as Google_Client;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -39,11 +41,11 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'role' => $validated['email'] === env('ADMIN_EMAIL') ? Role::Admin : Role::User,
+            'role' => $this->isAdminEmail($validated['email']) ? Role::Admin : Role::User,
             'status' => UserStatus::Active,
         ]);
 
-        $user->sendEmailVerificationNotification();
+        $this->sendVerificationEmail($user);
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -63,17 +65,18 @@ class AuthController extends Controller
             return $this->error("Too many login attempts. Please try again in {$seconds} seconds.", 429);
         }
 
-        if (!Auth::attempt(['email' => $validated['email'], 'password' => $validated['password']])) {
+        // NOTE: do not use Auth::attempt() here. This is a stateless token API,
+        // there is no session store, so SessionGuard::attempt() would throw a 500.
+        $user = User::where('email', $validated['email'])->first();
+
+        if (!$user || !$user->password || !Hash::check($validated['password'], $user->password)) {
             RateLimiter::hit($throttleKey, 60);
             return $this->error('Invalid credentials.', 401);
         }
 
         RateLimiter::clear($throttleKey);
 
-        $user = Auth::user();
-
         if ($user->isBlocked()) {
-            Auth::logout();
             return $this->error('Your account has been blocked.', 403);
         }
 
@@ -128,7 +131,7 @@ class AuthController extends Controller
                 'avatar' => $avatar,
                 'email_verified_at' => now(),
                 'password' => Hash::make(Str::random(32)),
-                'role' => $email === env('ADMIN_EMAIL') ? Role::Admin : Role::User,
+                'role' => $this->isAdminEmail($email) ? Role::Admin : Role::User,
                 'status' => UserStatus::Active,
             ]);
         }
@@ -141,17 +144,41 @@ class AuthController extends Controller
         ], 'Google authentication successful.');
     }
 
-    public function logout(): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
         /** @var User $user */
-        $user = Auth::user();
-        $user->currentAccessToken()->delete();
+        $user = $request->user();
+        $token = $user->currentAccessToken();
+
+        // Cookie (SPA) auth gives a TransientToken which cannot be deleted.
+        if ($token instanceof PersonalAccessToken) {
+            $token->delete();
+        }
 
         return $this->success(null, 'Logged out successfully.');
     }
 
-    public function me(): JsonResponse
+    public function me(Request $request): JsonResponse
     {
-        return $this->success(new UserResource(Auth::user()));
+        return $this->success(new UserResource($request->user()));
+    }
+
+    private function isAdminEmail(string $email): bool
+    {
+        $adminEmail = config('app.admin_email');
+
+        return $adminEmail && strcasecmp($email, $adminEmail) === 0;
+    }
+
+    /**
+     * A broken/empty SMTP config must not turn a successful registration into a 500.
+     */
+    private function sendVerificationEmail(User $user): void
+    {
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            Log::warning('Could not send verification email: ' . $e->getMessage());
+        }
     }
 }

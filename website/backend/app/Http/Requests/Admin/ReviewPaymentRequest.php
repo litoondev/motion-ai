@@ -14,8 +14,7 @@ class ReviewPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'action' => ['required', 'string', 'in:approve,reject'],
-            'note' => ['sometimes', 'string', 'max:1000'],
+            'note' => ['sometimes', 'nullable', 'string', 'max:1000'],
         ];
     }
 }

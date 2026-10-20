@@ -22,7 +22,7 @@ class TrialTest extends TestCase
 
         $response = $this->actingAs($user)->postJson('/api/v1/trial/activate');
 
-        $response->assertOk()
+        $response->assertCreated()
             ->assertJsonPath('success', true);
 
         $user->refresh();

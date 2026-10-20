@@ -17,7 +17,7 @@ class DownloadController extends Controller
             return $this->error('You need an active license to download the plugin.', 403);
         }
 
-        $filePath = env('PLUGIN_FILE_PATH', 'plugin/motion-ai-plugin.zip');
+        $filePath = config('app.plugin_file_path');
 
         if (!Storage::disk('private')->exists($filePath)) {
             return $this->error('Plugin file not found.', 404);

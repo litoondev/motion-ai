@@ -1,11 +1,6 @@
-'use client';
-import { AuthProvider } from '@/lib/auth-context';
-import type { User } from '@/lib/types';
+"use client";
+import { AuthProvider } from "@/lib/auth-context";
 
-export function Providers({ children, user }: { children: React.ReactNode; user?: User | null }) {
-  return (
-    <AuthProvider initialUser={user}>
-      {children}
-    </AuthProvider>
-  );
+export function Providers({ children }: { children: React.ReactNode }) {
+  return <AuthProvider>{children}</AuthProvider>;
 }

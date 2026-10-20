@@ -4,18 +4,17 @@ const footerLinks = {
   Product: [
     { label: "Features",  href: "/#features" },
     { label: "Pricing",   href: "/#pricing" },
-    { label: "Changelog", href: "/changelog" },
-    { label: "Docs",      href: "/docs" },
+    { label: "Docs",      href: "/docs/" },
   ],
   Account: [
-    { label: "Sign in",    href: "/login" },
-    { label: "Register",   href: "/register" },
-    { label: "Dashboard",  href: "/dashboard" },
+    { label: "Sign in",    href: "/login/" },
+    { label: "Register",   href: "/register/" },
+    { label: "Dashboard",  href: "/dashboard/" },
   ],
   Legal: [
-    { label: "Privacy Policy",  href: "/privacy" },
-    { label: "Terms of Service", href: "/terms" },
-    { label: "Refund Policy",   href: "/refund" },
+    { label: "Privacy Policy",  href: "/privacy/" },
+    { label: "Terms of Service", href: "/terms/" },
+    { label: "Refund Policy",   href: "/refund/" },
   ],
 };
 
@@ -57,7 +56,7 @@ export function Footer() {
 
         <div className="mt-10 border-t border-[var(--color-border)] pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-[var(--color-text-muted)] font-body">
-            &copy; {new Date().getFullYear()} Motion AI. All rights reserved.
+            &copy; <span suppressHydrationWarning>{new Date().getFullYear()}</span> Motion AI. All rights reserved.
           </p>
           <p className="text-xs text-[var(--color-text-muted)] font-body">
             Built for Adobe After Effects

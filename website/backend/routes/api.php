@@ -41,11 +41,11 @@ Route::get('/ping', fn () => response()->json([
 Route::post('/license/verify', [LicenseVerifyController::class, 'verify'])->middleware('throttle:30,1');
 Route::get('/pricing', [PricingController::class, 'index']);
 
-// Legacy path for existing plugins
-Route::post('/api/license/verify', [LicenseVerifyController::class, 'verify'])->middleware('throttle:30,1');
+// Legacy path (/api/license/verify) is registered in bootstrap/app.php (outside the /api/v1 prefix)
 
 // Auth
 Route::prefix('auth')->group(function () {
+
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
     Route::post('/google', [AuthController::class, 'google'])->middleware('throttle:10,1');

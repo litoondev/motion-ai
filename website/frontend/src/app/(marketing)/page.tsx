@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,7 +7,8 @@ import {
   Zap, Brain, Layers, RefreshCw, Shield, Download,
   Check, ArrowRight, Play, Sparkles, Clock, MonitorSmartphone,
 } from "lucide-react";
-import { pricingService } from "@/services/pricing";
+import { usePricing } from "@/lib/use-pricing";
+import { SUPPORT_EMAIL } from "@/lib/config";
 import type { Pricing } from "@/lib/types";
 
 // ─── Data ──────────────────────────────────────────────────────────────
@@ -66,12 +68,12 @@ function buildPricingPlans(pricing: Pricing) {
       description: "Try every feature with no restrictions.",
       features: [
         `Full feature access for ${pricing.trial_days} days`,
-        "1 device",
+        "Up to 2 devices",
         "Community support",
         "All preset library",
       ],
       cta: "Start free trial",
-      ctaHref: "/register",
+      ctaHref: "/register/",
       variant: "secondary" as const,
       popular: false,
     },
@@ -88,7 +90,7 @@ function buildPricingPlans(pricing: Pricing) {
         "Lifetime access to current version",
       ],
       cta: "Buy now",
-      ctaHref: "/register?plan=standard",
+      ctaHref: "/register/?plan=standard",
       variant: "cta" as const,
       popular: true,
     },
@@ -105,7 +107,7 @@ function buildPricingPlans(pricing: Pricing) {
         "Team license management",
       ],
       cta: "Contact sales",
-      ctaHref: "mailto:design@orangetoolz.com",
+      ctaHref: `mailto:${SUPPORT_EMAIL}`,
       variant: "secondary" as const,
       popular: false,
     },
@@ -114,18 +116,8 @@ function buildPricingPlans(pricing: Pricing) {
 
 // ─── Page ──────────────────────────────────────────────────────────────
 
-export default async function LandingPage() {
-  let pricing: Pricing;
-  try {
-    pricing = await pricingService.get();
-  } catch {
-    pricing = {
-      price_per_seat_year: 49,
-      team_price_per_seat_year: 39,
-      team_threshold: 5,
-      trial_days: 7,
-    };
-  }
+export default function LandingPage() {
+  const { pricing } = usePricing();
 
   const pricingPlans = buildPricingPlans(pricing);
 
@@ -162,15 +154,15 @@ export default async function LandingPage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button variant="cta" size="xl" rightIcon={<ArrowRight className="h-5 w-5" />} asChild>
-              <Link href="/register">Start {pricing.trial_days}-day free trial</Link>
+              <Link href="/register/">Start {pricing.trial_days}-day free trial</Link>
             </Button>
             <Button variant="secondary" size="xl" leftIcon={<Play className="h-4 w-4" />} asChild>
-              <Link href="#demo">Watch demo</Link>
+              <Link href="/#features">See features</Link>
             </Button>
           </div>
 
           <p className="mt-4 text-xs text-[var(--color-text-muted)] font-body">
-            No credit card required &nbsp;&middot;&nbsp; Works inside After Effects &nbsp;&middot;&nbsp; Cancel anytime
+            No credit card required &nbsp;&middot;&nbsp; Works inside After Effects &nbsp;&middot;&nbsp; One-time license, no subscription
           </p>
 
           {/* Mock plugin preview */}
@@ -309,7 +301,7 @@ export default async function LandingPage() {
           {/* Manual payment note */}
           <p className="mt-8 text-center text-sm text-[var(--color-text-muted)] font-body">
             Bank transfer available for all plans. &nbsp;
-            <Link href="/dashboard/billing" className="text-[var(--color-primary-600)] hover:underline">
+            <Link href="/dashboard/billing/" className="text-[var(--color-primary-600)] hover:underline">
               Learn more &rarr;
             </Link>
           </p>
@@ -353,7 +345,7 @@ export default async function LandingPage() {
             Join thousands of motion designers already using Motion AI. Free {pricing.trial_days}-day trial, no credit card required.
           </p>
           <Button variant="cta" size="xl" rightIcon={<ArrowRight className="h-5 w-5" />} asChild>
-            <Link href="/register">Get started for free</Link>
+            <Link href="/register/">Get started for free</Link>
           </Button>
         </div>
       </section>

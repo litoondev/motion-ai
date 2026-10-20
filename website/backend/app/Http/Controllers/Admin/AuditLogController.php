@@ -30,7 +30,7 @@ class AuditLogController extends Controller
             $query->where('created_at', '<=', $to);
         }
 
-        $logs = $query->latest()->paginate($request->input('per_page', 15));
+        $logs = $query->latest()->paginate(min((int) $request->input('per_page', 15), 100));
 
         return $this->success(AuditLogResource::collection($logs)->response()->getData(true));
     }

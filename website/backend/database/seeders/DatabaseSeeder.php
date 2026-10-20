@@ -14,7 +14,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SettingSeeder::class,
             AdminSeeder::class,
-            TestDataSeeder::class,
         ]);
+
+        // Fake users / licenses / payments must never reach production.
+        if (app()->environment(['local', 'testing'])) {
+            $this->call(TestDataSeeder::class);
+        }
     }
 }

@@ -33,11 +33,12 @@ class UserController extends Controller
             $query->where('status', $status);
         }
 
-        $sortBy = $request->input('sort_by', 'created_at');
-        $sortDir = $request->input('sort_dir', 'desc');
+        $sortBy = in_array($request->input('sort_by'), ['created_at', 'name', 'email', 'role', 'status'], true)
+            ? $request->input('sort_by') : 'created_at';
+        $sortDir = $request->input('sort_dir') === 'asc' ? 'asc' : 'desc';
         $query->orderBy($sortBy, $sortDir);
 
-        $users = $query->paginate($request->input('per_page', 15));
+        $users = $query->paginate(min((int) $request->input('per_page', 15), 100));
 
         return $this->success(UserResource::collection($users)->response()->getData(true));
     }

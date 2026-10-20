@@ -3,13 +3,14 @@
 return [
 
     'defaults' => [
-        'guard' => 'api',
+        'guard' => 'web',
         'passwords' => 'users',
     ],
 
     'guards' => [
-        'api' => [
-            'driver' => 'sanctum',
+        // Session guard: Sanctum checks this first (SPA cookie auth).
+        'web' => [
+            'driver' => 'session',
             'provider' => 'users',
         ],
     ],

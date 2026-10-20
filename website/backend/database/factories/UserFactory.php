@@ -4,11 +4,12 @@ namespace Database\Factories;
 
 use App\Enums\Role;
 use App\Enums\UserStatus;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -36,7 +37,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'role' => Role::Admin,
-            'email' => env('ADMIN_EMAIL', 'admin@example.com'),
+            'email' => config('app.admin_email') ?: 'admin@example.com',
         ]);
     }
 

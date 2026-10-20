@@ -48,11 +48,12 @@ class PaymentController extends Controller
             });
         }
 
-        $sortBy = $request->input('sort_by', 'created_at');
-        $sortDir = $request->input('sort_dir', 'desc');
+        $sortBy = in_array($request->input('sort_by'), ['created_at', 'amount', 'status', 'method'], true)
+            ? $request->input('sort_by') : 'created_at';
+        $sortDir = $request->input('sort_dir') === 'asc' ? 'asc' : 'desc';
         $query->orderBy($sortBy, $sortDir);
 
-        $payments = $query->paginate($request->input('per_page', 15));
+        $payments = $query->paginate(min((int) $request->input('per_page', 15), 100));
 
         return $this->success(PaymentResource::collection($payments)->response()->getData(true));
     }

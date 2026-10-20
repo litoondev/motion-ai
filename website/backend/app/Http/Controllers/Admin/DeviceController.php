@@ -26,7 +26,7 @@ class DeviceController extends Controller
             $query->where('is_active', filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN));
         }
 
-        $devices = $query->latest()->paginate($request->input('per_page', 15));
+        $devices = $query->latest()->paginate(min((int) $request->input('per_page', 15), 100));
 
         return $this->success(DeviceResource::collection($devices)->response()->getData(true));
     }

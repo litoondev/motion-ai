@@ -1,115 +1,141 @@
-import { getApiUrl } from '@/config/api';
-import { cookies } from 'next/headers';
+import { API_BASE_URL, PLUGIN_FILENAME } from "@/lib/config";
+import { clearToken, getToken, UNAUTHORIZED_EVENT } from "@/lib/token";
+import type { FieldErrors } from "@/lib/types";
+
+/** Laravel envelope: { success, message, data, errors } */
+interface Envelope<T> {
+  success: boolean;
+  message?: string;
+  data?: T;
+  errors?: FieldErrors | null;
+}
 
 export class ApiError extends Error {
   constructor(
-    public statusCode: number,
+    public status: number,
     message: string,
-    public errors?: Record<string, string[]>
+    public errors?: FieldErrors | null
   ) {
     super(message);
+    this.name = "ApiError";
   }
 }
 
-interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-  errors: Record<string, string[]> | null;
+interface RequestOptions {
+  method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
+  /** plain object -> JSON, FormData -> multipart */
+  body?: unknown;
+  /** send the Bearer token (default true when a token exists) */
+  auth?: boolean;
+  signal?: AbortSignal;
 }
 
-export async function apiFetch<T>(
-  path: string,
-  options: RequestInit & { token?: string } = {}
-): Promise<T> {
-  const { token, ...fetchOptions } = options;
-
-  const headers: Record<string, string> = {
-    'Accept': 'application/json',
-    ...(fetchOptions.headers as Record<string, string> || {}),
-  };
-
-  if (fetchOptions.body && !(fetchOptions.body instanceof FormData)) {
-    headers['Content-Type'] = 'application/json';
+function buildHeaders(opts: RequestOptions): Headers {
+  const headers = new Headers({ Accept: "application/json" });
+  if (opts.body !== undefined && !(opts.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
   }
-
-  const authToken = token || await getAuthToken();
-  if (authToken) {
-    headers['Authorization'] = `Bearer ${authToken}`;
-  }
-
-  const url = getApiUrl(path);
-  const response = await fetch(url, {
-    ...fetchOptions,
-    headers,
-  });
-
-  if (response.status === 401) {
-    throw new ApiError(401, 'Unauthorized');
-  }
-
-  const json: ApiResponse<T> = await response.json();
-
-  if (!response.ok || !json.success) {
-    throw new ApiError(
-      response.status,
-      json.message || 'An error occurred',
-      json.errors || undefined
-    );
-  }
-
-  return json.data;
+  const token = opts.auth === false ? null : getToken();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  return headers;
 }
 
-async function getAuthToken(): Promise<string | null> {
+function buildBody(body: unknown): BodyInit | undefined {
+  if (body === undefined) return undefined;
+  return body instanceof FormData ? body : JSON.stringify(body);
+}
+
+function handleUnauthorized(hadToken: boolean) {
+  if (hadToken && typeof window !== "undefined") {
+    clearToken();
+    window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
+  }
+}
+
+async function send(path: string, opts: RequestOptions): Promise<Response> {
   try {
-    if (typeof window === 'undefined') {
-      const cookieStore = await cookies();
-      return cookieStore.get('auth_token')?.value || null;
-    }
-    return null;
-  } catch {
-    return null;
+    return await fetch(`${API_BASE_URL}${path}`, {
+      method: opts.method ?? "GET",
+      headers: buildHeaders(opts),
+      body: buildBody(opts.body),
+      signal: opts.signal,
+    });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") throw err;
+    throw new ApiError(0, "Cannot reach the server. Check your connection and try again.");
   }
 }
 
-export async function clientApiFetch<T>(
-  path: string,
-  options: RequestInit & { token?: string } = {}
-): Promise<T> {
-  const { token, ...fetchOptions } = options;
+export async function apiFetch<T = unknown>(path: string, opts: RequestOptions = {}): Promise<T> {
+  const hadToken = opts.auth !== false && Boolean(getToken());
+  const response = await send(path, opts);
 
-  const headers: Record<string, string> = {
-    'Accept': 'application/json',
-    ...(fetchOptions.headers as Record<string, string> || {}),
-  };
-
-  if (fetchOptions.body && !(fetchOptions.body instanceof FormData)) {
-    headers['Content-Type'] = 'application/json';
+  // The API can answer with HTML (e.g. a proxy error page), so never assume JSON.
+  const text = await response.text();
+  let json: Envelope<T> | null = null;
+  try {
+    json = text ? (JSON.parse(text) as Envelope<T>) : null;
+  } catch {
+    json = null;
   }
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+  if (response.status === 401) handleUnauthorized(hadToken);
 
-  const { getPublicApiUrl } = await import('@/config/api');
-  const url = getPublicApiUrl(path);
-
-  const response = await fetch(url, {
-    ...fetchOptions,
-    headers,
-    credentials: 'include',
-  });
-
-  const json: ApiResponse<T> = await response.json();
-
-  if (!response.ok || !json.success) {
+  if (!response.ok || !json || json.success === false) {
     throw new ApiError(
       response.status,
-      json.message || 'An error occurred',
-      json.errors || undefined
+      json?.message || `Request failed (${response.status}).`,
+      json?.errors ?? null
     );
   }
 
-  return json.data;
+  return json.data as T;
+}
+
+/** Downloads the plugin zip through fetch (the endpoint needs the Bearer token). */
+export async function downloadPluginFile(path: string): Promise<void> {
+  const hadToken = Boolean(getToken());
+  const response = await send(path, {});
+
+  if (!response.ok) {
+    if (response.status === 401) handleUnauthorized(hadToken);
+    let message = `Download failed (${response.status}).`;
+    try {
+      const json = (await response.json()) as Envelope<unknown>;
+      if (json.message) message = json.message;
+    } catch {
+      /* keep default message */
+    }
+    throw new ApiError(response.status, message);
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = PLUGIN_FILENAME;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}
+
+/** First validation message if there is one, otherwise the error message. */
+export function errorMessage(err: unknown, fallback = "Something went wrong. Please try again."): string {
+  if (err instanceof ApiError) {
+    const first = err.errors ? Object.values(err.errors).flat()[0] : undefined;
+    return first || err.message || fallback;
+  }
+  return err instanceof Error && err.message ? err.message : fallback;
+}
+
+/** Field -> first message, for showing errors under inputs. */
+export function fieldErrors(err: unknown): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (err instanceof ApiError && err.errors) {
+    for (const [field, messages] of Object.entries(err.errors)) {
+      if (messages?.[0]) out[field] = messages[0];
+    }
+  }
+  return out;
 }

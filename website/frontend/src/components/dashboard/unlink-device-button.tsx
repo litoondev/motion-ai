@@ -1,35 +1,31 @@
 "use client";
 import { useState } from "react";
-import { Unlink, Loader2 } from "lucide-react";
+import { Loader2, Unlink } from "lucide-react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { unlinkDevice } from "@/app/actions/devices";
+import { userService } from "@/services/user";
+import { errorMessage } from "@/lib/api";
 
 export function UnlinkDeviceButton({
   deviceId,
   deviceName,
+  onUnlinked,
 }: {
   deviceId: number;
   deviceName: string;
+  onUnlinked: () => void;
 }) {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function handleUnlink() {
     if (!confirm(`Unlink "${deviceName}"? You will need to re-enter your license key on that machine.`)) return;
-
     setLoading(true);
     try {
-      const result = await unlinkDevice(deviceId);
-      if (result.success) {
-        toast.success("Device unlinked.");
-        router.refresh();
-      } else {
-        toast.error(result.error ?? "Failed to unlink device.");
-      }
-    } catch {
-      toast.error("Network error. Please try again.");
+      await userService.unlinkDevice(deviceId);
+      toast.success("Device unlinked.");
+      onUnlinked();
+    } catch (err) {
+      toast.error(errorMessage(err, "Failed to unlink device."));
     } finally {
       setLoading(false);
     }
@@ -38,9 +34,7 @@ export function UnlinkDeviceButton({
   return (
     <Button variant="ghost" size="sm" onClick={handleUnlink} disabled={loading}
       className="text-[var(--color-error)] hover:text-[var(--color-error)] shrink-0">
-      {loading
-        ? <Loader2 className="h-4 w-4 animate-spin" />
-        : <Unlink className="h-4 w-4" />}
+      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Unlink className="h-4 w-4" />}
       <span className="ml-1.5">Unlink</span>
     </Button>
   );

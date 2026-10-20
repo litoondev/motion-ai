@@ -5,7 +5,8 @@ import { Providers } from "@/components/providers/auth-provider";
 
 export const metadata: Metadata = {
   title: "Motion AI – After Effects Plugin",
-  description: "Professional motion design AI plugin for After Effects. Automate animations, generate keyframes, and create stunning motion graphics.",
+  description:
+    "Professional motion design AI plugin for After Effects. Automate animations, generate keyframes, and create stunning motion graphics.",
   keywords: ["After Effects", "plugin", "motion design", "AI", "animation"],
   openGraph: {
     title: "Motion AI – After Effects Plugin",
@@ -22,9 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -37,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               fontSize: "0.875rem",
             },
             success: { iconTheme: { primary: "var(--color-success)", secondary: "var(--color-success-bg)" } },
-            error:   { iconTheme: { primary: "var(--color-error)",   secondary: "var(--color-error-bg)"   } },
+            error: { iconTheme: { primary: "var(--color-error)", secondary: "var(--color-error-bg)" } },
           }}
         />
       </body>

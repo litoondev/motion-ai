@@ -8,7 +8,7 @@ return [
         env('APP_URL') ? ','.parse_url(env('APP_URL'), PHP_URL_HOST) : ''
     ))),
 
-    'guard' => ['api'],
+    'guard' => ['web'],
 
     'expiration' => null,
 

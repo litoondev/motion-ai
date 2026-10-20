@@ -143,7 +143,7 @@ class LicenseVerifyTest extends TestCase
 
     public function test_legacy_path_also_works(): void
     {
-        $response = $this->postJson('/api/v1/api/license/verify', $this->verifyPayload('INVALID'));
+        $response = $this->postJson('/api/license/verify', $this->verifyPayload('INVALID'));
 
         $response->assertOk()
             ->assertJson(['valid' => false]);

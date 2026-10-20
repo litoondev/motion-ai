@@ -26,7 +26,7 @@ class CheckoutController extends Controller
         $validated = $request->validated();
         $user = $request->user();
 
-        $price = $this->pricingService->calculate($validated['seats'], $validated['years']);
+        $price = $this->pricingService->calculate($validated['seats'], $validated['years'])['total'];
 
         return DB::transaction(function () use ($validated, $user, $price, $request) {
             if ($validated['method'] === 'bank_transfer') {

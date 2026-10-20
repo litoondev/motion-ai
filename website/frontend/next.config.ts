@@ -1,24 +1,17 @@
 import type { NextConfig } from "next";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
-const apiHostname = new URL(apiUrl.replace("/api/v1", "")).hostname;
-
+/**
+ * Static export: `npm run build` writes a plain HTML/CSS/JS site to ./out
+ * that can be uploaded to any web server (Apache, Nginx, shared hosting, S3 ...).
+ *
+ *  - no Node.js server is needed in production
+ *  - the API URL is read at BUILD time from NEXT_PUBLIC_API_URL
+ */
 const nextConfig: NextConfig = {
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
-  },
-  images: {
-    remotePatterns: [
-      { protocol: "https", hostname: "lh3.googleusercontent.com" },
-      { protocol: "http", hostname: apiHostname },
-      { protocol: "https", hostname: apiHostname },
-    ],
-  },
+  output: "export",
+  trailingSlash: true, // /login/ -> out/login/index.html (works on every static host)
+  images: { unoptimized: true }, // the image optimizer needs a server
+  reactStrictMode: true,
 };
 
 export default nextConfig;

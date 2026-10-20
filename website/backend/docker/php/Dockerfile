@@ -1,6 +1,6 @@
 FROM php:8.2-fpm
 
-# Install system dependencies
+# System dependencies + PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -26,24 +26,27 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# PHP settings (upload limits, error display, opcache off for local dev)
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/app.ini
 
-# Set working directory
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html
 
-# Copy composer files and install dependencies
+# Install dependencies first (better layer cache)
 COPY composer.json composer.lock* ./
-RUN composer install --no-scripts --no-autoloader --prefer-dist 2>/dev/null || true
+RUN composer install --no-scripts --no-autoloader --prefer-dist --no-interaction
 
-# Copy application
+# Application code
 COPY . .
+RUN composer dump-autoload --optimize
 
-# Generate autoloader
-RUN composer dump-autoload --optimize 2>/dev/null || true
-
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
+# Entrypoint: creates storage dirs, fixes permissions, installs vendor if the
+# bind mount hides it, creates the storage symlink.
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 9000
+ENTRYPOINT ["entrypoint.sh"]
 CMD ["php-fpm"]

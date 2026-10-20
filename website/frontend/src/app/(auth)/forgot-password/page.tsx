@@ -1,29 +1,35 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Mail, ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight, Mail } from "lucide-react";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import toast from "react-hot-toast";
-import { forgotPasswordAction } from "@/app/actions/auth";
+import { authService } from "@/services/auth";
+import { errorMessage, fieldErrors } from "@/lib/api";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [emailError, setEmailError] = useState<string>();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
-    const result = await forgotPasswordAction({ email });
-    setLoading(false);
-    if (result.success) {
+    setEmailError(undefined);
+    try {
+      await authService.forgotPassword({ email: email.trim() });
       setSent(true);
-    } else {
-      toast.error(result.error ?? "Failed to send reset email.");
+    } catch (err) {
+      const fields = fieldErrors(err);
+      if (fields.email) setEmailError(fields.email);
+      else toast.error(errorMessage(err, "Failed to send reset email."));
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -35,7 +41,7 @@ export default function ForgotPasswordPage() {
         <p className="text-sm text-[var(--color-text-secondary)] font-body">
           If an account exists for <strong>{email}</strong>, we sent a password reset link. Check your inbox and spam folder.
         </p>
-        <Link href="/login" className="mt-6 inline-flex items-center gap-1 text-sm text-[var(--color-primary-600)] hover:underline font-body">
+        <Link href="/login/" className="mt-6 inline-flex items-center gap-1 text-sm text-[var(--color-primary-600)] hover:underline font-body">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to sign in
         </Link>
       </Card>
@@ -54,16 +60,16 @@ export default function ForgotPasswordPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <Input label="Email address" type="email" placeholder="you@example.com"
-            value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" required />
-          <Button type="submit" variant="primary" size="lg" className="w-full"
-            loading={loading} rightIcon={<ArrowRight className="h-4 w-4" />}>
+          <Input label="Email address" type="email" placeholder="you@example.com" value={email}
+            onChange={(e) => setEmail(e.target.value)} autoComplete="email" error={emailError} required />
+          <Button type="submit" variant="primary" size="lg" className="w-full" loading={loading}
+            rightIcon={<ArrowRight className="h-4 w-4" />}>
             Send reset link
           </Button>
         </form>
 
         <p className="mt-6 text-center text-xs text-[var(--color-text-muted)] font-body">
-          <Link href="/login" className="text-[var(--color-primary-600)] hover:underline">Back to sign in</Link>
+          <Link href="/login/" className="text-[var(--color-primary-600)] hover:underline">Back to sign in</Link>
         </p>
       </CardContent>
     </Card>
