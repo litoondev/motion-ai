@@ -20,6 +20,14 @@ import { formatDate, formatCurrency } from "@/lib/utils";
 import type { Payment, PaginatedResponse } from "@/lib/types";
 import toast from "react-hot-toast";
 
+const METHOD_LABELS: Record<string, string> = {
+  bank_transfer: "Bank Transfer",
+  bkash: "bKash",
+  payoneer: "Payoneer",
+  wise: "Wise",
+  card: "Card",
+};
+
 const statusVariant: Record<string, "warning" | "success" | "error" | "muted"> = {
   pending: "warning",
   approved: "success",
@@ -110,7 +118,7 @@ export default function PaymentsPage() {
       key: "method",
       label: "Method",
       render: (p) => (
-        <span className="text-[var(--color-text-secondary)]">{p.method.replace("_", " ")}</span>
+        <span className="text-[var(--color-text-secondary)]">{METHOD_LABELS[p.method] ?? p.method}</span>
       ),
     },
     {
@@ -210,8 +218,10 @@ export default function PaymentsPage() {
             label: "All Methods",
             options: [
               { label: "Bank Transfer", value: "bank_transfer" },
-              { label: "Stripe", value: "stripe" },
-              { label: "PayPal", value: "paypal" },
+              { label: "bKash", value: "bkash" },
+              { label: "Payoneer", value: "payoneer" },
+              { label: "Wise", value: "wise" },
+              { label: "Card", value: "card" },
             ],
           },
         ]}

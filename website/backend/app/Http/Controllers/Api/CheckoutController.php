@@ -28,8 +28,10 @@ class CheckoutController extends Controller
 
         $price = $this->pricingService->calculate($validated['seats'], $validated['years'])['total'];
 
-        return DB::transaction(function () use ($validated, $user, $price, $request) {
-            if ($validated['method'] === 'bank_transfer') {
+        $method = PaymentMethod::from($validated['method']);
+
+        return DB::transaction(function () use ($validated, $user, $price, $request, $method) {
+            if ($method->isManual()) {
                 $slipPath = null;
                 if ($request->hasFile('slip')) {
                     $slipPath = Storage::disk('private')->putFile('slips', $request->file('slip'));
@@ -37,7 +39,7 @@ class CheckoutController extends Controller
 
                 $payment = Payment::create([
                     'user_id' => $user->id,
-                    'method' => PaymentMethod::BankTransfer,
+                    'method' => $method,
                     'status' => PaymentStatus::Pending,
                     'amount' => $price,
                     'currency' => 'USD',

@@ -46,7 +46,7 @@ export interface Device {
 export interface Payment {
   id: number;
   userId: number;
-  method: 'bank_transfer' | 'stripe' | 'paypal';
+  method: 'bank_transfer' | 'bkash' | 'payoneer' | 'wise' | 'card';
   amount: number;
   currency: string;
   status: 'pending' | 'approved' | 'rejected' | 'refunded';
