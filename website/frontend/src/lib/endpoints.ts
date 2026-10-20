@@ -20,6 +20,7 @@ export const endpoints = {
     unlink: (id: number) => `/devices/${id}/unlink`,
   },
   checkout: "/checkout",
+  coupon: "/coupon/validate",
   payments: "/payments",
   download: "/download",
   pricing: "/pricing",

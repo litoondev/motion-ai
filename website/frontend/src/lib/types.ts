@@ -42,7 +42,7 @@ export interface License {
 
 export interface Payment {
   id: number;
-  method: "card" | "bank_transfer";
+  method: "bank_transfer" | "bkash" | "payoneer" | "wise";
   status: "pending" | "approved" | "rejected" | "refunded";
   /** Laravel returns decimals as strings ("49.00") */
   amount: string | number;
@@ -88,6 +88,14 @@ export interface PaginatedResponse<T> {
 export interface CardCheckoutResult {
   payment: Payment;
   checkout_url: string;
+}
+
+export interface CouponResult {
+  code: string;
+  discount_percent: number;
+  discount_flat?: number;
+  valid: boolean;
+  message?: string;
 }
 
 export type FieldErrors = Record<string, string[]>;

@@ -143,9 +143,9 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
-      <div>
-        <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Settings</h1>
-        <p className="text-sm text-[var(--color-text-secondary)] font-body mt-1">Manage your account and preferences.</p>
+      <div className="pb-6 border-b border-[var(--color-border-soft)] mb-6">
+        <h1 className="text-xl font-bold font-heading text-[var(--color-text-primary)] leading-tight">Settings</h1>
+        <p className="text-sm text-[var(--color-text-muted)] font-body mt-1">Manage your account and preferences.</p>
       </div>
 
       <Card>

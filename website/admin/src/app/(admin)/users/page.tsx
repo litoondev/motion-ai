@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { SearchFilter } from "@/components/admin/search-filter";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { PageHeader } from "@/components/admin/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getUsers, blockUser, unblockUser, changeUserRole } from "@/services/admin";
@@ -157,7 +158,11 @@ export default function UsersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Users</h1>
+      <PageHeader
+        title="Users"
+        description="Manage user accounts and roles."
+        breadcrumbs={[{ label: "Users" }]}
+      />
 
       <SearchFilter
         searchPlaceholder="Search by name or email..."

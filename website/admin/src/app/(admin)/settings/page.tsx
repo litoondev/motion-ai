@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Save, Upload, Package } from "lucide-react";
+import { PageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -77,7 +78,11 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex flex-col gap-6">
-        <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Settings</h1>
+        <PageHeader
+          title="Settings"
+          description="Configure pricing, plugin, and system settings."
+          breadcrumbs={[{ label: "Settings" }]}
+        />
         <div className="h-64 rounded-[var(--radius-lg)] animate-shimmer" />
       </div>
     );
@@ -85,7 +90,11 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
-      <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Settings</h1>
+      <PageHeader
+        title="Settings"
+        description="Configure pricing, plugin, and system settings."
+        breadcrumbs={[{ label: "Settings" }]}
+      />
 
       {/* Pricing Settings */}
       <Card>

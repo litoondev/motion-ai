@@ -2,6 +2,7 @@ import { apiFetch, downloadPluginFile } from "@/lib/api";
 import { endpoints } from "@/lib/endpoints";
 import type {
   CardCheckoutResult,
+  CouponResult,
   DashboardData,
   License,
   PaginatedResponse,
@@ -32,22 +33,30 @@ export const userService = {
   }) => apiFetch<User>(endpoints.user.profile, { method: "PATCH", body: data }),
 
   /** Card: returns a Stripe checkout URL to redirect to. */
-  checkoutCard: (data: { seats: number; years: number }) =>
+  checkoutCard: (data: { seats: number; years: number; currency?: string; coupon?: string }) =>
     apiFetch<CardCheckoutResult>(endpoints.checkout, {
       method: "POST",
       body: { ...data, method: "card" },
     }),
 
-  /** Bank transfer: multipart so the receipt file can be attached. */
-  checkoutBank: (data: { seats: number; years: number; txRef: string; slip?: File | null }) => {
+  /** Manual payment: multipart so the receipt file can be attached. */
+  checkoutBank: (data: { seats: number; years: number; txRef: string; slip?: File | null; currency?: string; coupon?: string; method?: string }) => {
     const form = new FormData();
     form.append("seats", String(data.seats));
     form.append("years", String(data.years));
-    form.append("method", "bank_transfer");
+    form.append("method", data.method || "bank_transfer");
     form.append("tx_ref", data.txRef);
+    if (data.currency) form.append("currency", data.currency);
+    if (data.coupon) form.append("coupon", data.coupon);
     if (data.slip) form.append("slip", data.slip);
     return apiFetch<Payment>(endpoints.checkout, { method: "POST", body: form });
   },
+
+  validateCoupon: (code: string) =>
+    apiFetch<CouponResult>(endpoints.coupon, {
+      method: "POST",
+      body: { code },
+    }),
 
   downloadPlugin: () => downloadPluginFile(endpoints.download),
 };

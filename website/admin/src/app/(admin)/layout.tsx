@@ -19,12 +19,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user) return null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--color-bg-base)]">
+    <div className="min-h-screen flex flex-col sm:flex-row bg-[var(--color-bg-base)]">
+      {/* Mobile header */}
       <AdminHeader user={user} />
-      <div className="flex flex-1">
-        <Sidebar />
-        <main className="flex-1 p-4 sm:p-8 overflow-auto">{children}</main>
-      </div>
+
+      {/* Desktop sidebar */}
+      <Sidebar user={user} />
+
+      {/* Main content */}
+      <main className="flex-1 min-w-0 overflow-auto">
+        <div className="max-w-[1200px] mx-auto p-4 sm:p-6 lg:p-8">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

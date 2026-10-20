@@ -6,6 +6,7 @@ import { Plus, Pause, XCircle, RefreshCw, CalendarPlus, Users as UsersIcon } fro
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { SearchFilter } from "@/components/admin/search-filter";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { PageHeader } from "@/components/admin/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -198,12 +199,16 @@ export default function LicensesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Licenses</h1>
-        <Button variant="cta" size="sm" leftIcon={<Plus className="h-4 w-4" />} asChild>
-          <Link href="/licenses/generate">Generate Key</Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="Licenses"
+        description="Manage license keys and subscriptions."
+        breadcrumbs={[{ label: "Licenses" }]}
+        actions={
+          <Button variant="cta" size="sm" leftIcon={<Plus className="h-4 w-4" />} asChild>
+            <Link href="/licenses/generate">Generate Key</Link>
+          </Button>
+        }
+      />
 
       <SearchFilter
         searchPlaceholder="Search by key or email..."

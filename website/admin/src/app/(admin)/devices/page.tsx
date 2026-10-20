@@ -5,6 +5,7 @@ import { Unlink } from "lucide-react";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { SearchFilter } from "@/components/admin/search-filter";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { PageHeader } from "@/components/admin/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getDevices, forceUnlinkDevice } from "@/services/admin";
@@ -135,7 +136,11 @@ export default function DevicesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Devices</h1>
+      <PageHeader
+        title="Devices"
+        description="Monitor and manage linked devices."
+        breadcrumbs={[{ label: "Devices" }]}
+      />
 
       <SearchFilter
         searchPlaceholder="Search by device name or ID..."

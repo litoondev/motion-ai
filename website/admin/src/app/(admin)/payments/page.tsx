@@ -5,6 +5,7 @@ import { Eye, CheckCircle, XCircle, RotateCcw } from "lucide-react";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { SearchFilter } from "@/components/admin/search-filter";
 import { ConfirmDialog } from "@/components/admin/confirm-dialog";
+import { PageHeader } from "@/components/admin/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -185,7 +186,11 @@ export default function PaymentsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Payments</h1>
+      <PageHeader
+        title="Payments"
+        description="Review and manage payment transactions."
+        breadcrumbs={[{ label: "Payments" }]}
+      />
 
       <SearchFilter
         searchPlaceholder="Search by TX ref or email..."

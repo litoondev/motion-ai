@@ -39,7 +39,7 @@ export function PaymentsTable({ payments }: { payments: Payment[] }) {
             <tr key={p.id} className="border-b border-[var(--color-border)] last:border-0 align-top">
               <td className="py-3 pr-4 text-[var(--color-text-secondary)] whitespace-nowrap">{formatDate(p.created_at)}</td>
               <td className="py-3 pr-4 text-[var(--color-text-secondary)] whitespace-nowrap">
-                {p.method === "card" ? "Card" : "Bank transfer"}
+                {p.method === "bank_transfer" ? "Bank Transfer" : p.method === "bkash" ? "bKash" : p.method === "payoneer" ? "Payoneer" : p.method === "wise" ? "Wise" : p.method}
               </td>
               <td className="py-3 pr-4 text-[var(--color-text-secondary)] whitespace-nowrap">
                 {p.seat_count} seat{p.seat_count > 1 ? "s" : ""} × {p.year_count} yr

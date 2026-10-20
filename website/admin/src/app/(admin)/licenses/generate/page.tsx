@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Copy, Check, Key } from "lucide-react";
+import { Copy, Check, Key } from "lucide-react";
+import { PageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -57,12 +58,11 @@ export default function GenerateLicensePage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-xl">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" asChild leftIcon={<ArrowLeft className="h-4 w-4" />}>
-          <Link href="/licenses">Back</Link>
-        </Button>
-        <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Generate License Key</h1>
-      </div>
+      <PageHeader
+        title="Generate License Key"
+        description="Create a new license key for a user."
+        breadcrumbs={[{ label: "Licenses", href: "/licenses" }, { label: "Generate" }]}
+      />
 
       {generated ? (
         <Card>

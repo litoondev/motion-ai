@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Users, Key, CreditCard, MonitorSmartphone, UserPlus, DollarSign } from "lucide-react";
 import { StatCard } from "@/components/admin/stat-card";
+import { PageHeader } from "@/components/admin/page-header";
 import { getStats } from "@/services/admin";
 import { getAuthToken } from "@/lib/auth-cookie";
 import type { Stats } from "@/lib/types";
@@ -31,10 +32,13 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex flex-col gap-6">
-        <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Dashboard</h1>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <PageHeader
+          title="Dashboard"
+          description="Overview of your Motion AI platform."
+        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-28 rounded-[var(--radius-lg)] animate-shimmer" />
+            <div key={i} className="h-[120px] rounded-[var(--radius-lg)] animate-shimmer" />
           ))}
         </div>
       </div>
@@ -42,19 +46,22 @@ export default function DashboardPage() {
   }
 
   const statCards = [
-    { label: "Total Users",       value: stats?.totalUsers ?? 0,        icon: Users,             color: "var(--color-primary-500)" },
+    { label: "Total Users",       value: stats?.totalUsers ?? 0,        icon: Users,             color: "var(--color-primary-600)" },
     { label: "Active Licenses",   value: stats?.activeLicenses ?? 0,    icon: Key,               color: "var(--color-success)" },
     { label: "Pending Payments",  value: stats?.pendingPayments ?? 0,   icon: CreditCard,        color: "var(--color-warning)" },
-    { label: "Active Devices",    value: stats?.activeDevices ?? 0,     icon: MonitorSmartphone,  color: "var(--color-secondary-300)" },
-    { label: "Recent Signups",    value: stats?.recentSignups ?? 0,     icon: UserPlus,          color: "var(--color-info)" },
-    { label: "Revenue",           value: `$${(stats?.revenue ?? 0).toLocaleString()}`, icon: DollarSign, color: "var(--color-cta-500)" },
+    { label: "Active Devices",    value: stats?.activeDevices ?? 0,     icon: MonitorSmartphone,  color: "var(--color-info)" },
+    { label: "Recent Signups",    value: stats?.recentSignups ?? 0,     icon: UserPlus,          color: "var(--color-accent-600)" },
+    { label: "Revenue",           value: `$${(stats?.revenue ?? 0).toLocaleString()}`, icon: DollarSign, color: "var(--color-cta-600)" },
   ];
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Dashboard</h1>
+      <PageHeader
+        title="Dashboard"
+        description="Overview of your Motion AI platform."
+      />
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {statCards.map((s) => (
           <StatCard key={s.label} {...s} />
         ))}

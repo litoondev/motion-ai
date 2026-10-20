@@ -21,7 +21,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-semibold text-[var(--color-text-primary)] font-body"
+            className="text-sm font-medium text-[var(--color-text-secondary)] font-body"
           >
             {label}
           </label>

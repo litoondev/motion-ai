@@ -6,6 +6,7 @@ export interface User {
   status: 'active' | 'blocked';
   trialUsed: boolean;
   emailVerifiedAt: string | null;
+  avatar?: string | null;
   createdAt: string;
   updatedAt: string;
   licensesCount?: number;

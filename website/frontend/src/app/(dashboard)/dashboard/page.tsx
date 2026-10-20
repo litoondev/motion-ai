@@ -74,6 +74,7 @@ export default function DashboardPage() {
   const primaryExpired = primary ? isExpired(primary.expires_at) || primary.status === "expired" : false;
   const primaryIsTrial = primary?.type === "trial";
   const primaryDaysLeft = primary?.expires_at ? daysUntil(primary.expires_at) : 0;
+  const hasPendingPayment = recent_payments.some((p) => p.status === "pending");
 
   return (
     <div className="flex flex-col gap-6">
@@ -81,8 +82,8 @@ export default function DashboardPage() {
         <QueryToasts />
       </Suspense>
 
-      <div>
-        <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Dashboard</h1>
+      <div className="pb-6 border-b border-[var(--color-border-soft)] mb-6">
+        <h1 className="text-xl font-bold font-heading text-[var(--color-text-primary)] leading-tight">Dashboard</h1>
         <p className="text-sm text-[var(--color-text-muted)] font-body mt-1">
           Welcome back, {user.name || user.email}
         </p>
@@ -142,6 +143,18 @@ export default function DashboardPage() {
           <Button variant="cta" size="sm" asChild>
             <Link href="/dashboard/billing/">Buy now</Link>
           </Button>
+        </Card>
+      )}
+
+      {hasPendingPayment && (
+        <Card className="p-4 flex items-center gap-4 flex-wrap border-[var(--color-warning)]">
+          <Clock className="h-5 w-5 text-[var(--color-warning)] shrink-0" />
+          <div className="flex-1 min-w-48">
+            <p className="text-sm font-semibold text-[var(--color-text-primary)] font-body">Payment under review</p>
+            <p className="text-xs text-[var(--color-text-secondary)] font-body">
+              Your payment is pending approval. Your license will be activated once our team verifies the payment.
+            </p>
+          </div>
         </Card>
       )}
 

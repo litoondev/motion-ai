@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { DataTable, type Column } from "@/components/admin/data-table";
 import { SearchFilter } from "@/components/admin/search-filter";
+import { PageHeader } from "@/components/admin/page-header";
 import { getAuditLogs } from "@/services/admin";
 import { getAuthToken } from "@/lib/auth-cookie";
 import { formatDate } from "@/lib/utils";
@@ -74,7 +75,11 @@ export default function AuditLogsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-h3 font-heading text-[var(--color-text-primary)]">Audit Log</h1>
+      <PageHeader
+        title="Audit Log"
+        description="Track admin actions and system events."
+        breadcrumbs={[{ label: "Audit Log" }]}
+      />
 
       <SearchFilter
         searchPlaceholder=""
