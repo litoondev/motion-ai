@@ -598,6 +598,10 @@ body {
 .sp-nav-link:hover { color: #a78bfa; }
 .sp-nav-link:focus-visible { outline: 2px solid #a78bfa; outline-offset: -2px; }
 
+/* ─── Utility ─────────────────────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* ─── Light Beam (ScalePro value section) ────────────────────────── */
 .sp-beam {
   position: relative;

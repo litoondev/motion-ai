@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { Fragment, useState, useEffect, useRef, useCallback } from "react";
 import {
   Zap, Brain, Layers, RefreshCw, Shield, Download,
@@ -280,20 +281,49 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right: Dashboard preview */}
+            {/* Right: Plugin UI screenshots */}
             <div className={cn("fade-in-up delay-2", hero.visible && "visible")}>
-              <div className="relative">
-                <div className="relative rounded-[24px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-1 shadow-[0_0_80px_0_rgba(115,80,255,0.12)]">
-                  <div className="rounded-xl bg-[var(--color-bg-elevated)] aspect-[4/3] flex items-center justify-center overflow-hidden">
-                    <div className="text-center p-8">
-                      <Sparkles className="h-16 w-16 text-[var(--color-primary-500)] mx-auto mb-4 animate-pulse" />
-                      <p className="text-sm text-[var(--color-text-muted)] font-body mb-2">Motion AI Panel</p>
-                      <p className="text-xs text-[var(--color-text-muted)] font-body opacity-60">Plugin preview coming soon</p>
-                    </div>
-                  </div>
+              <div className="relative select-none">
+                {/* Purple glow behind */}
+                <div
+                  className="pointer-events-none absolute inset-0 -z-10 blur-[80px] opacity-30"
+                  style={{ background: "radial-gradient(ellipse at 60% 40%, #7350ff, transparent 70%)" }}
+                />
+
+                {/* Main: Motion Curve home view */}
+                <Image
+                  src="/plugin-ui/22.png"
+                  alt="Motion AI plugin panel — motion curve home view"
+                  width={1456}
+                  height={816}
+                  className="w-full h-auto rounded-[20px]"
+                  quality={90}
+                  priority
+                />
+
+                {/* Floating: Easing tab */}
+                <div className="absolute -bottom-8 -left-10 w-[54%] rounded-[14px] overflow-hidden shadow-[0_24px_60px_-8px_rgba(0,0,0,0.7)]">
+                  <Image
+                    src="/plugin-ui/25.png"
+                    alt="Motion AI — easing curve editor"
+                    width={1456}
+                    height={816}
+                    className="w-full h-auto"
+                    quality={85}
+                  />
                 </div>
-                <div className="absolute -top-6 -right-6 w-24 h-24 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] opacity-40 -z-10" />
-                <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] opacity-30 -z-10" />
+
+                {/* Floating: AI Matte */}
+                <div className="absolute -top-8 -right-8 w-[46%] rounded-[14px] overflow-hidden shadow-[0_24px_60px_-8px_rgba(115,80,255,0.25)]">
+                  <Image
+                    src="/plugin-ui/27.png"
+                    alt="Motion AI — AI Matte background removal"
+                    width={1456}
+                    height={816}
+                    className="w-full h-auto"
+                    quality={85}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -337,45 +367,79 @@ export default function LandingPage() {
           </div>
 
           {/* 2 large + 3 small grid like ScalePro */}
-          <div className="grid gap-5 sm:grid-cols-2">
-            {features.filter(f => f.size === "large").map((f, i) => (
-              <div
-                key={f.title}
-                className={cn(
-                  "group p-8 rounded-[24px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] hover-lift fade-in-up",
-                  featSection.visible && "visible",
-                  i === 0 ? "delay-1" : "delay-2"
-                )}
-              >
-                <div className="mb-20 sm:mb-28 relative">
-                  <div className="w-14 h-14 rounded-xl bg-[var(--color-primary-500)]/10 border border-[var(--color-primary-500)]/20 flex items-center justify-center icon-glow">
-                    <f.icon className="h-6 w-6 text-[var(--color-primary-400)]" />
+          {/* Screenshots for the two large feature cards */}
+          {(() => {
+            const largeImgs = ["/plugin-ui/29.png", "/plugin-ui/30.png"];
+            const largeAlts = ["Motion AI — Auto Captions AI tool", "Motion AI — Keystone keyframe retimer"];
+            return (
+              <div className="grid gap-5 sm:grid-cols-2">
+                {features.filter(f => f.size === "large").map((f, i) => (
+                  <div
+                    key={f.title}
+                    className={cn(
+                      "group rounded-[24px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] hover-lift fade-in-up overflow-hidden",
+                      featSection.visible && "visible",
+                      i === 0 ? "delay-1" : "delay-2"
+                    )}
+                  >
+                    {/* Screenshot */}
+                    <div className="relative overflow-hidden">
+                      <Image
+                        src={largeImgs[i]}
+                        alt={largeAlts[i]}
+                        width={1456}
+                        height={816}
+                        className="w-full h-auto object-cover max-h-[280px] object-top"
+                        quality={85}
+                      />
+                    </div>
+                    {/* Text */}
+                    <div className="p-8">
+                      <div className="w-14 h-14 rounded-xl bg-[var(--color-primary-500)]/10 border border-[var(--color-primary-500)]/20 flex items-center justify-center icon-glow mb-5">
+                        <f.icon className="h-6 w-6 text-[var(--color-primary-400)]" />
+                      </div>
+                      <h3 className="text-xl font-heading font-medium text-white mb-2">{f.title}</h3>
+                      <p className="text-sm text-[var(--color-text-secondary)] font-body leading-relaxed">{f.description}</p>
+                    </div>
                   </div>
-                </div>
-                <h3 className="text-xl font-heading font-medium text-white mb-2">{f.title}</h3>
-                <p className="text-sm text-[var(--color-text-secondary)] font-body leading-relaxed">{f.description}</p>
+                ))}
               </div>
-            ))}
-          </div>
+            );
+          })()}
+
           <div className="grid gap-5 sm:grid-cols-3 mt-5">
-            {features.filter(f => f.size === "small").map((f, i) => (
-              <div
-                key={f.title}
-                className={cn(
-                  "group p-6 rounded-[24px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] hover-lift fade-in-up",
-                  featSection.visible && "visible",
-                  `delay-${i + 3}`
-                )}
-              >
-                <div className="mb-14 sm:mb-20 relative">
-                  <div className="w-12 h-12 rounded-xl bg-[var(--color-primary-500)]/10 border border-[var(--color-primary-500)]/20 flex items-center justify-center icon-glow">
-                    <f.icon className="h-5 w-5 text-[var(--color-primary-400)]" />
+            {["/plugin-ui/28.png", "/plugin-ui/39.png", "/plugin-ui/32.png"].map((img, i) => {
+              const f = features.filter(f => f.size === "small")[i];
+              const alts = ["Motion AI — AI Connect MCP server", "Motion AI — Composition Setup panel", "Motion AI — Smart Import Lottie & SVG"];
+              return (
+                <div
+                  key={f.title}
+                  className={cn(
+                    "group rounded-[24px] border border-[var(--color-border)] bg-[var(--color-bg-surface)] hover-lift fade-in-up overflow-hidden",
+                    featSection.visible && "visible",
+                    `delay-${i + 3}`
+                  )}
+                >
+                  <div className="relative overflow-hidden">
+                    <Image
+                      src={img}
+                      alt={alts[i]}
+                      width={1456}
+                      height={816}
+                      className="w-full h-auto object-cover object-top max-h-[200px]"
+                      quality={80}
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="w-12 h-12 rounded-xl bg-[var(--color-primary-500)]/10 border border-[var(--color-primary-500)]/20 flex items-center justify-center icon-glow mb-4">
+                      <f.icon className="h-5 w-5 text-[var(--color-primary-400)]" />
+                    </div>
+                    <h3 className="text-lg font-heading font-medium text-white mb-2">{f.title}</h3>
+                    <p className="text-sm text-[var(--color-text-secondary)] font-body leading-relaxed">{f.description}</p>
                   </div>
                 </div>
-                <h3 className="text-lg font-heading font-medium text-white mb-2">{f.title}</h3>
-                <p className="text-sm text-[var(--color-text-secondary)] font-body leading-relaxed">{f.description}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

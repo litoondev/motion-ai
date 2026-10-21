@@ -8,7 +8,7 @@ import { SpButton } from "@/components/marketing/sp-button";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { label: "Features", href: "/#features" },
+  { label: "Features", href: "/features/" },
   { label: "Pricing",  href: "/#pricing"  },
   { label: "Docs",     href: "/docs/"     },
 ];
